@@ -259,15 +259,13 @@ disorder_categories_bar_ggp <-
   ylab("Overlastcategorie")
 disorder_categories_bar_ggp
 
-ggsave_svg(ggp=crime_categories_bar_ggp,
+ggsave_svg(ggp=disorder_categories_bar_ggp,
            output = here("output"),
            units = "mm",
            width = 120,
            height = 60,
            scale=2
 )
-
-
 
 
 #  8. Visualize population growth 2012-2024 ------------------------------------
@@ -318,28 +316,6 @@ monthly_crime_rates <-
   mutate(Periode = year(year_month) %in% c(2020:2023),
          Periode = factor(Periode, levels = c(FALSE,TRUE), 
                           labels = c("voor/na COVID pandemie", "tijdens COVID pandemie")))
-
-monthly_crime_rates_ggp <-
-  monthly_crime_rates |>
-  ggplot() + 
-  geom_line(aes(x=year_month, y = rel_frequency)) + 
-  scale_x_yearmonth(date_breaks="1 year", date_labels="%Y") +
-  geom_vline(xintercept = as.Date("2020-01-01"), linetype="dotted") +
-  geom_vline(xintercept = as.Date("2021-12-01"), linetype="dotted") +
-  facet_wrap(facets = "crime_type_code",  scales = "free_y", ncol=4) +
-  theme_minimal() +
-  theme(legend.position = "bottom",
-        axis.text.x = element_text(size=5, hjust=0),
-        axis.text.y = element_text(size=6, hjust=0)) +
-  xlab("Jaar") +
-  ylab("Misdrijven / jaar / 100000")
-monthly_crime_rates_ggp
-
-ggsave_svg(ggp=monthly_crime_rates_ggp,
-           output = here("output"),
-           units = "mm",
-           width = 120, height = 60, scale=2)
-
 
 ggplot_annual_crime_rates <- function(by = crime_type_code,
                                 xlab = "Jaar",
