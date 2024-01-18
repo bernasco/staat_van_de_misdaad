@@ -1,0 +1,12 @@
+"Key","Title","Description","CategoryGroupID"
+"0.0.0 ","Totaal registraties overlast",,
+"E33   ","Overlast door verward persoon",,
+"E35   ","Melding overlast jeugd","Iedere melding waarbij wordt geklaagd over jeugd, bijvoorbeeld: hangjeugd, geluidsoverlast door jeugd. Algemene definitie voor alle overlastcodes: Overlast is een situatie, waarin er hinder wordt ondervonden van een toestand, persoon, object of iets dergelijks. Indien een meer specifieke maatschappelijke klasse in de tabel voorhanden is, dan dient deze te worden gebruikt. Onder overlast van/door jeugd wordt NIET begrepen baldadigheid en vandalisme.",
+"E38   ","Overlast ivm alcohol/ drugs","Iedere vorm van overlast gerelateerd aan zowel harddrugs als softdrugs, bijvoorbeeld een gebruikerspand dat overlast veroorzaakt. Algemene definitie voor alle overlastcodes: Overlast is een situatie, waarin er hinder wordt ondervonden van een toestand, persoon, object of iets dergelijks. ",
+"E41   ","Overlast zwervers","Iedere vorm van overlast veroorzaakt door een zwerver. Algemene definitie voor alle overlastcodes: Overlast is een situatie, waarin er hinder wordt ondervonden van een toestand, persoon, object of iets dergelijks.",
+"F010  ","Openbare dronkenschap","Zich in kennelijke staat van dronkenschap bevinden op een openbare of voor het publiek toegankelijke plaats.",
+"M061  ","Geluidshinder horeca","Elke vorm van geluidsoverlast voortkomend uit een horeca-instelling
+",
+"M062  ","Geluidshinder evenement","Elke vorm van geluidsoverlast welke wordt veroorzaakt tijdens een evenement.",
+"M22   ","Geluidshinder overig","Een situatie waarbij er van geluid hinder wordt ondervonden anders dan afkomstig van een horecagelegenheid of legaal evenement.
+",
