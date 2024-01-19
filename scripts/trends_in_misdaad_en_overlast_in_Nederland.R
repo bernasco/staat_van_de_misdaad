@@ -308,15 +308,6 @@ ggsave_svg(ggp=population_growth_ggp,
 
 #  9. Visualize development annual crime rates 2012-2024 ---------------------
 
-# Monthly
-monthly_crime_rates <-
-  observed_crime_series |> 
-  group_by(crime_type_code, year_month) |> 
-  summarize(rel_frequency = sum(rel_frequency), .groups="drop") |> 
-  mutate(Periode = year(year_month) %in% c(2020:2023),
-         Periode = factor(Periode, levels = c(FALSE,TRUE), 
-                          labels = c("voor/na COVID pandemie", "tijdens COVID pandemie")))
-
 ggplot_annual_crime_rates <- function(by = crime_type_code,
                                 xlab = "Jaar",
                                 ylab = "Misdrijven / jaar / 100000") {
@@ -347,7 +338,7 @@ annual_crime_rates_nl_ggp
 ggsave_svg(ggp = annual_crime_rates_nl_ggp,
            output = here("output"),
            units = "mm",
-           width = 120, hóeight = 60, scale=2)
+           width = 120, height = 60, scale=2)
 
 
 
@@ -375,7 +366,7 @@ ggplot_annual_disorder_rates <- function(by = crime_type_code,
 annual_disorder_rates_nl_ggp <- 
   ggplot_annual_disorder_rates(crime_type_code, 
                             xlab = "Jaar", 
-                            ylab = "Misdrijven / jaar / 100000")
+                            ylab = "Overlastincidenten / jaar / 100000")
 annual_disorder_rates_nl_ggp
 
 ggsave_svg(ggp = annual_disorder_rates_nl_ggp,
