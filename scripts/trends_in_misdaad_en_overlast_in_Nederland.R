@@ -26,7 +26,7 @@ if (dir.exists(here::here("output")) == FALSE) {
 #  3. Define functions and constants -----------------------------------------------
 
 # Force fresh downloads from CBS 
-FORCE_REFRESH <- TRUE
+FORCE_REFRESH <- FALSE
 
 # Path name downloaded crime data
 NL_CRIME_PATHNAME      <- here("data", "NL_Crime.csv")
@@ -105,6 +105,20 @@ if (file.exists(NL_CRIME_PATHNAME) == FALSE | FORCE_REFRESH) {
   nl_allcrime_allyears <- read_csv(NL_CRIME_PATHNAME,
                                    show_col_types = FALSE)
 }
+
+nl_allcrime_allyears <-
+  nl_allcrime_allyears |>
+  filter(crime_type_code %in% 
+           c("1.6.2 Overige vermogensdelicten",
+             "1.2.3 Diefstal van brom-, snor-, fietsen",
+             "2.2.1 Vernieling cq. zaakbeschadiging",
+             "3.9.1 Horizontale fraude",
+             "1.2.1 Diefstal uit/vanaf motorvoertuigen",
+             "1.1.1 Diefstal/inbraak woning",
+             "1.4.5 Mishandeling",
+             "2.5.2 Winkeldiefstal"
+             )
+  )
 
 # Download or read NL-level disorder frequencies of all years 
 if (file.exists(NL_DISORDER_PATHNAME) == FALSE | FORCE_REFRESH) {
@@ -284,7 +298,7 @@ population_growth_ggp <-
     xintercept =
       as.numeric(seq(
         from = as.Date("2012-01-01"),  
-        to = as.Date("2022-01-01"), by = "year"
+        to = as.Date("2024-01-01"), by = "year"
       )),
     linetype = 1,
     color = "lightgrey",
@@ -314,11 +328,11 @@ ggplot_annual_crime_rates <- function(by = crime_type_code,
   observed_crime_series |> 
     group_by({{by}}, year = year(date)) |> 
     summarize(rel_frequency = sum(rel_frequency), .groups="drop") |> 
-    filter(year < 2023) |> 
+    filter(year < 2024) |> 
     ggplot() + 
     geom_line(aes(x=year, y = rel_frequency)) + 
     geom_point(aes(x=year, y = rel_frequency)) + 
-    scale_x_continuous(breaks = 2012:2023) +
+    scale_x_continuous(breaks = 2012:2024) +
 #   scale_color_manual(name="",  values =c("darkgrey", "black")) +  
     facet_wrap(facets = vars({{by}}),  scales = "free_y", ncol=4) +
     theme_minimal() +
@@ -349,11 +363,11 @@ ggplot_annual_disorder_rates <- function(by = crime_type_code,
   observed_disorder_series |> 
     group_by({{by}}, year = year(date)) |> 
     summarize(rel_frequency = sum(rel_frequency), .groups="drop") |> 
-    filter(year < 2023) |> 
+    filter(year < 2024) |> 
     ggplot() + 
     geom_line(aes(x=year, y = rel_frequency)) + 
     geom_point(aes(x=year, y = rel_frequency)) + 
-    scale_x_continuous(breaks = 2012:2023) +
+    scale_x_continuous(breaks = 2012:2024) +
     facet_wrap(facets = vars({{by}}),  scales = "free_y", ncol=4) +
     theme_minimal() +
     theme(legend.position = "bottom",
