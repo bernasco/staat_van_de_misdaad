@@ -31,6 +31,9 @@ if (dir.exists(here::here("output")) == FALSE) {
 # Force fresh downloads from CBS 
 FORCE_REFRESH <- FALSE
 
+# How many crime types to report
+N_CRIMETYPES <- 8
+
 # Path name downloaded crime data
 NL_CRIME_PATHNAME      <- here("data", "NL_Crime.csv")
 # Path name downloaded disorder data
@@ -102,13 +105,13 @@ if (file.exists(NL_CRIME_PATHNAME) == FALSE | FORCE_REFRESH) {
     mutate(year = year(Perioden_Date)) |>
     select(incident_type_code  = SoortMisdrijf_label,
            year,
-           total_incident_count = GeregistreerdeMisdrijven_1) |>
+           incident_count = GeregistreerdeMisdrijven_1) |>
     # replace NA with 0
-    mutate(total_incident_count = replace_na(total_incident_count, 0),
+    mutate(incident_count = replace_na(incident_count, 0),
            # remove trailing whitespace
-           incident_type_code  = trimws(incident_type_code)) |>
+           incident_type_code  = trimws(incident_type_code)) 
     # remove 'total crime' category
-    filter(incident_type_code != "Totaal misdrijven") 
+    # filter(incident_type_code != "Totaal misdrijven") 
  
   write_csv(nl_allcrime_allyears, NL_CRIME_PATHNAME)
   # Read local copy if it exists
@@ -136,13 +139,13 @@ if (file.exists(NL_DISORDER_PATHNAME) == FALSE | FORCE_REFRESH) {
     mutate(year = year(Perioden_Date)) |>
     select(incident_type_code   = Overlast_label,
            year,
-           total_incident_count = GeregistreerdeOverlast_1) |>
+           incident_count = GeregistreerdeOverlast_1) |>
     # replace NA with 0
-    mutate(total_incident_count = replace_na(total_incident_count, 0),
+    mutate(incident_count = replace_na(incident_count, 0),
            # remove trailing whitespace
-           incident_type_code  = trimws(incident_type_code)) |>
+           incident_type_code  = trimws(incident_type_code))
     # remove 'total crime' category
-    filter(incident_type_code != "Totaal registraties overlast") 
+    # filter(incident_type_code != "Totaal registraties overlast") 
     
   write_csv(nl_alldisorder_allyears, NL_DISORDER_PATHNAME)
   # Read local copy if it exists
@@ -167,7 +170,7 @@ if (file.exists(NL_POPULATION_PATHNAME) == FALSE | FORCE_REFRESH) {
            population       = BevolkingAanHetBeginVanDePeriode_1) |>
     mutate(year = year(date)) |>
     group_by(year) |>
-    summarize(population = mean(population))
+    summarize(population = mean(population, na.rm = TRUE))
   write_csv(nl_population_allyears, NL_POPULATION_PATHNAME)
   # Read local copy if it exists
 } else {
@@ -181,47 +184,75 @@ nl_allcrime_allyears_merged <-
   # merge with crime type category labels
   nl_allcrime_allyears |>
   # merge with population data
-  left_join(nl_population_allyears, by = "year")
+  left_join(nl_population_allyears, by = "year") |>
+  mutate(COVID = year %in% c(2020, 2021))
 
 # Disorder data with population data 
 nl_alldisorder_allyears_merged <- 
   # merge with crime type category labels
   nl_alldisorder_allyears |>
   # merge with population data
-  left_join(nl_population_allyears, by = "year")
-
+  left_join(nl_population_allyears, by = "year") |>
+  mutate(COVID = year %in% c(2020, 2021))
 
 
 #  6. Select crime and disorder categories -------------------------------------
 
-# Read categories Nationale Politie
-inp_bvh <- readxl::read_excel(here::here("scripts", "INP-BVH en INP-GMS.xlsx"), 
-                              sheet = "INP2013 BVH")
+# Total crime data
 
-selection_safety_without_accidents <-
-  inp_bvh |>
-  filter(`INP niv1`=="Veiligheid" & !str_detect(`INP niv3`,"Ongevallen")) |>
-  select(`INP niv3 code`) |>
-  count(`INP niv3 code`) |>
-  select(inp_niv3_code = `INP niv3 code`)
+nl_allcrime_allyears_total <-
+  nl_allcrime_allyears_merged |>
+  # exclude traffic accidents
+  filter(incident_type_code   != "1.3.1 Ongevallen (weg)", 
+         incident_type_code != "Totaal misdrijven") |>
+  group_by(year) |>
+  summarize(aantal_misdrijven = sum(incident_count))
 
-# Selection of crime data
+# Total disorder data
+nl_alldisorder_allyears_total <-
+  nl_alldisorder_allyears_merged |>
+  # exclude traffic accidents
+  filter(incident_type_code != "Totaal registraties overlast") |>
+  group_by(year) |>
+  summarize(aantal_overlastregistraties = sum(incident_count))
+
+# Selection crime types
+
 nl_allcrime_allyears_selection <-
   nl_allcrime_allyears_merged |>
-  mutate(inp_niv3_code = substring(incident_type_code, 1,5)) |>
-  inner_join(selection_safety_without_accidents, by = c("inp_niv3_code")) |>
-  mutate(rel_frequency = total_incident_count / (population / 100000)) |>
-  # According to the data provider and as suggested by the data
-  #  'Horizontale fraude' was not registered before 2016
-  filter(year > 2015,
-                incident_type_code != "3.9.1 Horizontale fraude") |>
+  # Exclude totals
+  filter(incident_type_code != "Totaal misdrijven") |> 
+  # exclude traffic accidents
+  filter(incident_type_code != "1.3.1 Ongevallen (weg)") |> 
+  # Count the total per crime type over all years
+  group_by(incident_type_code) |>
+  summarize(total_allyears = sum(incident_count)) |>
+  arrange(-total_allyears) |>
+  mutate(rank_order = row_number()) |>
+  filter(rank_order <= N_CRIMETYPES) |>
+  select(incident_type_code, rank_order) |>
+  left_join(nl_allcrime_allyears_merged, by = "incident_type_code") |>
+  filter(!(year <= 2015 & incident_type_code == "3.9.1 Horizontale fraude")) |>
+  mutate(rel_frequency = incident_count / (population / 100000)) |>
   select(-population)
 
 # Selection of disorder data
 nl_alldisorder_allyears_selection <-
   nl_alldisorder_allyears_merged |>
-  mutate(rel_frequency = total_incident_count / (population / 100000)) |>
-  select(-population)
+  # Exclude totals
+  filter(incident_type_code != "Totaal registraties overlast") |> 
+  # Count the total per disorder type over all years
+  group_by(incident_type_code) |>
+  summarize(total_allyears = sum(incident_count)) |>
+  arrange(-total_allyears) |>
+  mutate(rank_order = row_number()) |>
+  filter(rank_order <= N_CRIMETYPES) |>
+  select(incident_type_code, rank_order) |>
+  left_join(nl_alldisorder_allyears_merged, by = "incident_type_code") |>
+  mutate(rel_frequency = incident_count / (population / 100000)) |>
+  select(-population)  
+  
+    
 
 # Selection of population data
 nl_population_allyears_selection <-
@@ -235,7 +266,7 @@ nl_population_allyears_selection <-
 crime_categories_bar_ggp <-
   nl_allcrime_allyears_selection |>
   group_by(incident_type_code) |>
-  summarize(aantal = round(mean(total_incident_count),0)) |>
+  summarize(aantal = round(mean(incident_count),0)) |>
   # create percentages in addition to frequencies
   mutate(percentage = round(100 * aantal / sum(aantal),1),
          percentage = paste0(format(percentage, digits=2), "%"))  |>
@@ -265,7 +296,7 @@ ggsave_svg(ggp=crime_categories_bar_ggp,
 disorder_categories_bar_ggp <-
   nl_alldisorder_allyears_selection  |>
   group_by(incident_type_code) |>
-  summarize(aantal = round(mean(total_incident_count),0)) |>
+  summarize(aantal = round(mean(incident_count),0)) |>
   # create percentages in addition to frequencies
   mutate(percentage = round(100 * aantal / sum(aantal),1),
          percentage = paste0(format(percentage, digits=2), "%"))  |>
@@ -296,9 +327,11 @@ ggsave_svg(ggp=disorder_categories_bar_ggp,
 #  8. Visualize population growth 2012-2024 ------------------------------------
 population_growth_ggp <-
   nl_population_allyears_selection |>
+  mutate(population_in_million = population / 1000000) |>
   ggplot() +
-  geom_line(aes(x=year, y=population/1000000)) +
-  scale_x_continuous(breaks = 2012:2024) +  
+  geom_line(aes(x=year, y=population_in_million)) +
+  scale_x_continuous(breaks = 2012:2024) +
+  scale_y_continuous(breaks = 15:18) |> # , limits = c(0, 18)) +
   geom_vline(
     xintercept =
       as.numeric(seq(
@@ -324,6 +357,39 @@ ggsave_svg(ggp=population_growth_ggp,
            height = 60,
            scale=2)
 
+# Y scale including 0
+
+population_growth_inc_zero_ggp <-
+  nl_population_allyears_selection |>
+  mutate(population_in_million = population / 1000000) |>
+  ggplot() +
+  geom_line(aes(x=year, y=population_in_million)) +
+  scale_x_continuous(breaks = 2012:2024) +
+  scale_y_continuous(breaks = 0:18, limits = c(0, 18)) +
+  geom_vline(
+    xintercept =
+      as.numeric(seq(
+        from = 2012,  
+        to = 2024
+      )),
+    linetype = 1,
+    color = "lightgrey",
+    linewidth = .1,
+  ) + 
+  theme_minimal() +
+  theme(legend.position = "none",
+        axis.text.x = element_text(size=6, hjust=0),
+        axis.text.y = element_text(size=6, hjust=0)) +
+  xlab("Jaar") +
+  ylab("Omvang bevolking in miljoen")
+population_growth_inc_zero_ggp
+
+ggsave_svg(ggp=population_growth_inc_zero_ggp,
+           output = here("output"),
+           units = "mm",
+           width = 120, 
+           height = 60,
+           scale=2)
 
 #  9. Visualize development annual crime rates 2012-2024 ---------------------
 
@@ -337,7 +403,7 @@ ggplot_annual_crime_rates <- function(by = incident_type_code,
     geom_point(aes(x=year, y = rel_frequency)) + 
     scale_x_continuous(breaks = 2012:2024) +
     #   scale_color_manual(name="",  values =c("darkgrey", "black")) +  
-    facet_wrap(facets = vars({{by}}),  scales = "free_y", ncol=6) +
+    facet_wrap(facets = vars({{by}}),  ncol=4) +
     theme_minimal() +
     theme(legend.position = "bottom",
           axis.text.x = element_text(size=4, hjust=0),
@@ -358,6 +424,36 @@ ggsave_svg(ggp = annual_crime_rates_nl_ggp,
            width = 120, height = 60, scale=2)
 
 
+# single y scale
+ggplot_annual_crime_rates_single_y <- function(by = incident_type_code,
+                                      xlab = "Jaar",
+                                      ylab = "Misdrijven / jaar / 100000") {
+  nl_allcrime_allyears_selection |> 
+    group_by({{by}}, year ) |> 
+    ggplot() + 
+    geom_line(aes(x=year, y = rel_frequency, color = incident_type_code)) + 
+    geom_point(aes(x=year, y = rel_frequency, color = incident_type_code)) + 
+    scale_x_continuous(breaks = 2012:2024) +
+    scale_y_continuous(breaks = seq(0,1000, 100), limits = c(0, 1000)) +
+    #   scale_color_manual(name="",  values =c("darkgrey", "black")) +  
+    theme_minimal() +
+    theme(legend.position = "bottom") +
+    xlab(xlab) +
+    ylab(ylab)
+}
+
+
+annual_crime_rates_nl_single_y_ggp <- 
+  ggplot_annual_crime_rates_single_y(incident_type_code, 
+                            xlab = "Jaar", 
+                            ylab = "Misdrijven / jaar / 100000")
+annual_crime_rates_nl_single_y_ggp
+
+ggsave_svg(ggp = annual_crime_rates_nl_single_y_ggp,
+           output = here("output"),
+           units = "mm",
+           width = 120, height = 60, scale=2)
+
 
 
 ggplot_annual_disorder_rates <- function(by = incident_type_code,
@@ -372,9 +468,7 @@ ggplot_annual_disorder_rates <- function(by = incident_type_code,
     scale_x_continuous(breaks = 2012:2024) +
     facet_wrap(facets = vars({{by}}),  scales = "free_y", ncol=4) +
     theme_minimal() +
-    theme(legend.position = "bottom",
-          axis.text.x = element_text(size=4, hjust=0),
-          axis.text.y = element_text(size=6, hjust=0)) +
+    theme(legend.position = "bottom") +
     xlab(xlab) +
     ylab(ylab)
 }
@@ -392,8 +486,36 @@ ggsave_svg(ggp = annual_disorder_rates_nl_ggp,
 
 
 
+# single y scale
+ggplot_annual_disorder_rates_single_y <- function(by = incident_type_code,
+                                               xlab = "Jaar",
+                                               ylab = "Overlastincidenten / jaar / 100000") {
+  nl_alldisorder_allyears_selection |> 
+    group_by({{by}}, year ) |> 
+    ggplot() + 
+    geom_line(aes(x=year, y = rel_frequency, color = incident_type_code)) + 
+    geom_point(aes(x=year, y = rel_frequency, color = incident_type_code)) + 
+    scale_x_continuous(breaks = 2012:2024) +
+    scale_y_continuous(breaks = seq(0,1200, 100), limits = c(0, 1200)) +
+    #   scale_color_manual(name="",  values =c("darkgrey", "black")) +  
+    theme_minimal() +
+    theme(legend.position = "bottom",
+          axis.text.x = element_text(size=4, hjust=0),
+          axis.text.y = element_text(size=6, hjust=0)) +
+    xlab(xlab) +
+    ylab(ylab)
+}
 
+annual_disorder_rates_nl_single_y_ggp <- 
+  ggplot_annual_disorder_rates_single_y(incident_type_code, 
+                                     xlab = "Jaar", 
+                                     ylab = "Overlastincidenten / jaar / 100000")
+annual_disorder_rates_nl_single_y_ggp
 
+ggsave_svg(ggp = annual_disorder_rates_nl_single_y_ggp,
+           output = here("output"),
+           units = "mm",
+           width = 120, height = 60, scale=2)
 
 
 
