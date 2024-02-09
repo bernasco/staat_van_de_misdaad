@@ -427,14 +427,15 @@ ggsave_svg(ggp = annual_crime_rates_nl_ggp,
 # single y scale
 ggplot_annual_crime_rates_single_y <- function(by = incident_type_code,
                                       xlab = "Jaar",
-                                      ylab = "Misdrijven / jaar / 100000") {
+                                      ylab = "Misdrijven / jaar / 100000 inwoners") {
   nl_allcrime_allyears_selection |> 
     group_by({{by}}, year ) |> 
     ggplot() + 
-    geom_line(aes(x=year, y = rel_frequency, color = incident_type_code)) + 
-    geom_point(aes(x=year, y = rel_frequency, color = incident_type_code)) + 
+    geom_line(aes(x=year, y = rel_frequency, color = incident_type_code), size = 1.2) + 
+    geom_point(aes(x=year, y = rel_frequency, color = incident_type_code, shape = COVID), size = 3) + 
     scale_x_continuous(breaks = 2012:2024) +
     scale_y_continuous(breaks = seq(0,1000, 100), limits = c(0, 1000)) +
+    scale_color_viridis(discrete = TRUE, option = "D") +
     #   scale_color_manual(name="",  values =c("darkgrey", "black")) +  
     theme_minimal() +
     theme(legend.position = "bottom") +
@@ -446,7 +447,7 @@ ggplot_annual_crime_rates_single_y <- function(by = incident_type_code,
 annual_crime_rates_nl_single_y_ggp <- 
   ggplot_annual_crime_rates_single_y(incident_type_code, 
                             xlab = "Jaar", 
-                            ylab = "Misdrijven / jaar / 100000")
+                            ylab = "Misdrijven / jaar / 100000 inwoners")
 annual_crime_rates_nl_single_y_ggp
 
 ggsave_svg(ggp = annual_crime_rates_nl_single_y_ggp,
@@ -458,7 +459,7 @@ ggsave_svg(ggp = annual_crime_rates_nl_single_y_ggp,
 
 ggplot_annual_disorder_rates <- function(by = incident_type_code,
                                          xlab = "Jaar",
-                                         ylab = "Misdrijven / jaar / 100000") {
+                                         ylab = "Misdrijven / jaar / 100000 inwoners") {
   nl_alldisorder_allyears_selection |> 
     group_by({{by}}, year) |> 
     summarize(rel_frequency = sum(rel_frequency), .groups="drop") |> 
@@ -476,7 +477,7 @@ ggplot_annual_disorder_rates <- function(by = incident_type_code,
 annual_disorder_rates_nl_ggp <- 
   ggplot_annual_disorder_rates(incident_type_code, 
                                xlab = "Jaar", 
-                               ylab = "Overlastincidenten / jaar / 100000")
+                               ylab = "Overlastincidenten / jaar / 100000 inwoners")
 annual_disorder_rates_nl_ggp
 
 ggsave_svg(ggp = annual_disorder_rates_nl_ggp,
@@ -489,7 +490,7 @@ ggsave_svg(ggp = annual_disorder_rates_nl_ggp,
 # single y scale
 ggplot_annual_disorder_rates_single_y <- function(by = incident_type_code,
                                                xlab = "Jaar",
-                                               ylab = "Overlastincidenten / jaar / 100000") {
+                                               ylab = "Overlastincidenten / jaar / 100000 inwoners") {
   nl_alldisorder_allyears_selection |> 
     group_by({{by}}, year ) |> 
     ggplot() + 
@@ -497,6 +498,7 @@ ggplot_annual_disorder_rates_single_y <- function(by = incident_type_code,
     geom_point(aes(x=year, y = rel_frequency, color = incident_type_code)) + 
     scale_x_continuous(breaks = 2012:2024) +
     scale_y_continuous(breaks = seq(0,1200, 100), limits = c(0, 1200)) +
+    scale_color_viridis(discrete = TRUE, option = "D") +
     #   scale_color_manual(name="",  values =c("darkgrey", "black")) +  
     theme_minimal() +
     theme(legend.position = "bottom",
@@ -509,7 +511,7 @@ ggplot_annual_disorder_rates_single_y <- function(by = incident_type_code,
 annual_disorder_rates_nl_single_y_ggp <- 
   ggplot_annual_disorder_rates_single_y(incident_type_code, 
                                      xlab = "Jaar", 
-                                     ylab = "Overlastincidenten / jaar / 100000")
+                                     ylab = "Overlastincidenten / jaar / 100000 inwoners")
 annual_disorder_rates_nl_single_y_ggp
 
 ggsave_svg(ggp = annual_disorder_rates_nl_single_y_ggp,

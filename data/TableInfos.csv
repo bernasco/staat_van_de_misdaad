@@ -1,6 +1,6 @@
 "ID","Title","ShortTitle","Identifier","Summary","Modified","ReasonDelivery","ExplanatoryText","Language","Catalog","Frequency","Period","ShortDescription","Description","DefaultPresentation","DefaultSelection","GraphTypes","OutputStatus","Source","MetaDataModified","SearchPriority"
 0,"Bevolkingsontwikkeling; maand en jaar","Bevolkingsontwikkeling; per maand","83474NED","Levend geboren kinderen, overledenen, immigratie, emigratie (inclusief
-administratieve correcties) , overige correcties, bevolkingsgroei","2024-01-04T02:00:00","Actualisering","","nl","CBS","Permaand","Januari 1995 - november 2023","
+administratieve correcties) , overige correcties, bevolkingsgroei","2024-01-31T02:00:00","Actualisering","","nl","CBS","Permaand","Januari 1995 - december 2023","
 Deze tabel bevat maand- en jaarcijfers over de veranderingen in de bevolkingsomvang van Nederland. Deze veranderingen bestaan uit levend geboren kinderen, overledenen, immigratie, emigratie (inclusief administratieve correcties) en overige correcties. Daarnaast zijn ook cijfers over de totale bevolkingsgroei, begin- en eindbevolking opgenomen.
 
 Gegevens beschikbaar vanaf: januari 1995.
@@ -9,8 +9,8 @@ Status van de cijfers:
 De cijfers tot en met 2022 zijn definitief. De cijfers van de ‘Bevolking aan het begin van de periode’ voor januari 2023 zijn definitief. 
 De overige cijfers vanaf 2023 zijn voorlopig. Tussentijdse bijstellingen van voorgaande maanden zijn mogelijk.
 
-Wijzigingen per 4 januari 2024:
-De voorlopige cijfers over november 2023 zijn toegevoegd.
+Wijzigingen per 31 januari 2024:
+De voorlopige cijfers over december 2023 en het jaartotaal 2023 zijn toegevoegd.
 
 Wanneer komen er nieuwe cijfers?
 Aan het einde van iedere maand worden de voorlopige cijfers over de voorafgaande maand gepubliceerd. Tussentijdse bijstellingen van voorgaande maanden zijn mogelijk.
@@ -33,8 +33,8 @@ Status van de cijfers:
 De cijfers tot en met 2022 zijn definitief. De cijfers van de ‘Bevolking aan het begin van de periode’ voor januari 2023 zijn definitief. 
 De overige cijfers vanaf 2023 zijn voorlopig. Tussentijdse bijstellingen van voorgaande maanden zijn mogelijk.
 
-Wijzigingen per 4 januari 2024:
-De voorlopige cijfers over november 2023 zijn toegevoegd.
+Wijzigingen per 31 januari 2024:
+De voorlopige cijfers over december 2023 en het jaartotaal 2023 zijn toegevoegd.
 
 Wanneer komen er nieuwe cijfers?
 Aan het einde van iedere maand worden de voorlopige cijfers over de voorafgaande maand gepubliceerd. Tussentijdse bijstellingen van voorgaande maanden zijn mogelijk.
@@ -108,4 +108,4 @@ De gegevens in de tabel zijn vanaf 2014 samengesteld met behulp van het <a href=
 <a href='https://www.cbs.nl/nl-nl/over-ons/contact/infoservice'>Infoservice</a>
 
 Copyright (c) Centraal Bureau voor de Statistiek, Den Haag/Heerlen 
-Verveelvoudiging is toegestaan, mits het CBS als bron wordt vermeld.","ts=1702897865301&graphtype=Table&r=Perioden&k=Topics","$filter=((Perioden eq '2023MM01') or (Perioden eq '2023MM02') or (Perioden eq '2023MM03') or (Perioden eq '2023MM04') or (Perioden eq '2023MM05') or (Perioden eq '2023MM06') or (Perioden eq '2023MM07') or (Perioden eq '2023MM08') or (Perioden eq '2023MM09') or (Perioden eq '2023MM10') or (Perioden eq '2023MM11'))","Table,Bar,Line","Regulier","CBS.","2024-01-04T02:00:00","2"
+Verveelvoudiging is toegestaan, mits het CBS als bron wordt vermeld.","ts=1705485456303&graphtype=Table&r=Perioden&k=Topics","$filter=((Perioden eq '2023MM01') or (Perioden eq '2023MM02') or (Perioden eq '2023MM03') or (Perioden eq '2023MM04') or (Perioden eq '2023MM05') or (Perioden eq '2023MM06') or (Perioden eq '2023MM07') or (Perioden eq '2023MM08') or (Perioden eq '2023MM09') or (Perioden eq '2023MM10') or (Perioden eq '2023MM11') or (Perioden eq '2023MM12') or (Perioden eq '2023JJ00'))","Table,Bar,Line","Regulier","CBS.","2024-01-31T02:00:00","2"
