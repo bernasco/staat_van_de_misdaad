@@ -14,6 +14,8 @@ if (!require("lubridate"))
   install.packages("lubridate")
 if (!require("tsibble")) 
   install.packages("tsibble")
+if (!require("viridis")) 
+  install.packages("viridis")
 
 #  2. Set up folder structure --------------------------------------------------
 
@@ -31,8 +33,9 @@ if (dir.exists(here::here("output")) == FALSE) {
 # Force fresh downloads from CBS 
 FORCE_REFRESH <- FALSE
 
-# How many crime types to report
+# How many crime and disorder types to report
 N_CRIMETYPES <- 8
+N_DISORDERTYPES <- 8
 
 # Path name downloaded crime data
 NL_CRIME_PATHNAME      <- here("data", "NL_Crime.csv")
@@ -81,11 +84,6 @@ ggsave_svg_list <- function(ggp_list, output, ...) {
 
 
 #  4. Read crime, disorder and population data ---------------------------------
-
-# # To verify what police data are available:
-# cbs_catalog_politie <-
-#   cbs_get_datasets(catalog = "Politie") 
-
 
 # Download or read NL-level crime frequencies of all years 
 if (file.exists(NL_CRIME_PATHNAME) == FALSE | FORCE_REFRESH) {
@@ -185,7 +183,7 @@ nl_allcrime_allyears_merged <-
   nl_allcrime_allyears |>
   # merge with population data
   left_join(nl_population_allyears, by = "year") |>
-  mutate(COVID = year %in% c(2020, 2021))
+  mutate(COVID = as.numeric(year %in% c(2020, 2021)))
 
 # Disorder data with population data 
 nl_alldisorder_allyears_merged <- 
@@ -193,30 +191,33 @@ nl_alldisorder_allyears_merged <-
   nl_alldisorder_allyears |>
   # merge with population data
   left_join(nl_population_allyears, by = "year") |>
-  mutate(COVID = year %in% c(2020, 2021))
+  mutate(COVID = as.numeric(year %in% c(2020, 2021)))
 
 
 #  6. Select crime and disorder categories -------------------------------------
 
-# Total crime data
+# First calculate total crime and disorder incidents per year
 
 nl_allcrime_allyears_total <-
   nl_allcrime_allyears_merged |>
-  # exclude traffic accidents
+  # exclude traffic accidents and totals
   filter(incident_type_code   != "1.3.1 Ongevallen (weg)", 
          incident_type_code != "Totaal misdrijven") |>
+  # aggregate by year
   group_by(year) |>
   summarize(aantal_misdrijven = sum(incident_count))
 
-# Total disorder data
+# Total disorder data per year
 nl_alldisorder_allyears_total <-
   nl_alldisorder_allyears_merged |>
-  # exclude traffic accidents
+  # exclude totals
   filter(incident_type_code != "Totaal registraties overlast") |>
+  # aggregate by year
   group_by(year) |>
   summarize(aantal_overlastregistraties = sum(incident_count))
 
-# Selection crime types
+# Next select the most common crime and disorder types
+#   (and make correction for "3.9.1 Horizontale fraude")
 
 nl_allcrime_allyears_selection <-
   nl_allcrime_allyears_merged |>
@@ -224,15 +225,22 @@ nl_allcrime_allyears_selection <-
   filter(incident_type_code != "Totaal misdrijven") |> 
   # exclude traffic accidents
   filter(incident_type_code != "1.3.1 Ongevallen (weg)") |> 
-  # Count the total per crime type over all years
+  # count the total per crime type over all years
   group_by(incident_type_code) |>
   summarize(total_allyears = sum(incident_count)) |>
+  # sort crime types in descending order
   arrange(-total_allyears) |>
+  # rank order and select most common crime types
   mutate(rank_order = row_number()) |>
   filter(rank_order <= N_CRIMETYPES) |>
+  # select just the type of crime and its rank order
   select(incident_type_code, rank_order) |>
+  # merge back into data
   left_join(nl_allcrime_allyears_merged, by = "incident_type_code") |>
+  # correction: Horizontale fraude did not exist as a category before 2016
+  #             So it should be missing, not zero
   filter(!(year <= 2015 & incident_type_code == "3.9.1 Horizontale fraude")) |>
+  # calculate crime rate
   mutate(rel_frequency = incident_count / (population / 100000)) |>
   select(-population)
 
@@ -241,14 +249,18 @@ nl_alldisorder_allyears_selection <-
   nl_alldisorder_allyears_merged |>
   # Exclude totals
   filter(incident_type_code != "Totaal registraties overlast") |> 
-  # Count the total per disorder type over all years
+  # count the total number of disorder incidents per disorder type over all years
   group_by(incident_type_code) |>
   summarize(total_allyears = sum(incident_count)) |>
+  # sort disorder types in descending order
   arrange(-total_allyears) |>
+  # rank order and select most common disorder types
   mutate(rank_order = row_number()) |>
-  filter(rank_order <= N_CRIMETYPES) |>
+  filter(rank_order <= N_DISORDERTYPES) |>
+  # select just the type of disorder and its rank order
   select(incident_type_code, rank_order) |>
   left_join(nl_alldisorder_allyears_merged, by = "incident_type_code") |>
+  # calculate disorder rate
   mutate(rel_frequency = incident_count / (population / 100000)) |>
   select(-population)  
   
@@ -331,22 +343,9 @@ population_growth_ggp <-
   ggplot() +
   geom_line(aes(x=year, y=population_in_million)) +
   scale_x_continuous(breaks = 2012:2024) +
-  scale_y_continuous(breaks = 15:18) |> # , limits = c(0, 18)) +
-  geom_vline(
-    xintercept =
-      as.numeric(seq(
-        from = 2012,  
-        to = 2024
-      )),
-    linetype = 1,
-    color = "lightgrey",
-    linewidth = .1,
-  ) + 
+  scale_y_continuous(breaks = 15:18, limits = c(15, 18)) +
   theme_minimal() +
-  theme(legend.position = "none",
-        axis.text.x = element_text(size=6, hjust=0),
-        axis.text.y = element_text(size=6, hjust=0)) +
-  xlab("Jaar") +
+  xlab("") +
   ylab("Omvang bevolking in miljoen")
 population_growth_ggp
 
@@ -366,21 +365,8 @@ population_growth_inc_zero_ggp <-
   geom_line(aes(x=year, y=population_in_million)) +
   scale_x_continuous(breaks = 2012:2024) +
   scale_y_continuous(breaks = 0:18, limits = c(0, 18)) +
-  geom_vline(
-    xintercept =
-      as.numeric(seq(
-        from = 2012,  
-        to = 2024
-      )),
-    linetype = 1,
-    color = "lightgrey",
-    linewidth = .1,
-  ) + 
   theme_minimal() +
-  theme(legend.position = "none",
-        axis.text.x = element_text(size=6, hjust=0),
-        axis.text.y = element_text(size=6, hjust=0)) +
-  xlab("Jaar") +
+  xlab("") +
   ylab("Omvang bevolking in miljoen")
 population_growth_inc_zero_ggp
 
@@ -393,128 +379,76 @@ ggsave_svg(ggp=population_growth_inc_zero_ggp,
 
 #  9. Visualize development annual crime rates 2012-2024 ---------------------
 
-ggplot_annual_crime_rates <- function(by = incident_type_code,
-                                      xlab = "Jaar",
-                                      ylab = "Misdrijven / jaar / 100000") {
-  nl_allcrime_allyears_selection |> 
-    group_by({{by}}, year ) |> 
-    ggplot() + 
-    geom_line(aes(x=year, y = rel_frequency)) + 
-    geom_point(aes(x=year, y = rel_frequency)) + 
-    scale_x_continuous(breaks = 2012:2024) +
-    #   scale_color_manual(name="",  values =c("darkgrey", "black")) +  
-    facet_wrap(facets = vars({{by}}),  ncol=4) +
-    theme_minimal() +
-    theme(legend.position = "bottom",
-          axis.text.x = element_text(size=4, hjust=0),
-          axis.text.y = element_text(size=6, hjust=0)) +
-    xlab(xlab) +
-    ylab(ylab)
-}
-
-annual_crime_rates_nl_ggp <- 
-  ggplot_annual_crime_rates(incident_type_code, 
-                            xlab = "Jaar", 
-                            ylab = "Misdrijven / jaar / 100000")
-annual_crime_rates_nl_ggp
-
-ggsave_svg(ggp = annual_crime_rates_nl_ggp,
-           output = here("output"),
-           units = "mm",
-           width = 120, height = 60, scale=2)
-
-
 # single y scale
-ggplot_annual_crime_rates_single_y <- function(by = incident_type_code,
-                                      xlab = "Jaar",
-                                      ylab = "Misdrijven / jaar / 100000 inwoners") {
-  nl_allcrime_allyears_selection |> 
-    group_by({{by}}, year ) |> 
+annual_crime_rates_single_y_ggp <- 
+    nl_allcrime_allyears_selection |> 
+    mutate(incident_type_code = str_sub(incident_type_code, 7,-1)) |>
+    rename(`Soort misdrijf` = incident_type_code) |>
     ggplot() + 
-    geom_line(aes(x=year, y = rel_frequency, color = incident_type_code), size = 1.2) + 
-    geom_point(aes(x=year, y = rel_frequency, color = incident_type_code, shape = COVID), size = 3) + 
+    geom_col(data = nl_allcrime_allyears_selection |>
+               # height of the COVID bar extends 5% above the maximum rate
+               mutate(COVID = 1.05 * max(rel_frequency) * COVID) |> 
+               group_by(year, COVID) |>
+               summarize(.groups = "drop"),
+             mapping = aes(x = year, y = COVID), color = "lightgrey", alpha = .2, width = 1) +
+    geom_line(aes(x=year, y = rel_frequency, color = `Soort misdrijf`)) + 
+    geom_point(aes(x=year, y = rel_frequency, color = `Soort misdrijf`)) + 
     scale_x_continuous(breaks = 2012:2024) +
     scale_y_continuous(breaks = seq(0,1000, 100), limits = c(0, 1000)) +
+    # use discrete Viridis color palette (but note the yellow is )
     scale_color_viridis(discrete = TRUE, option = "D") +
-    #   scale_color_manual(name="",  values =c("darkgrey", "black")) +  
     theme_minimal() +
-    theme(legend.position = "bottom") +
-    xlab(xlab) +
-    ylab(ylab)
-}
+    theme(legend.position = "right") +
+    # no label on X axis as it is obvious that it is years
+    xlab("") +
+    ylab("Misdrijven / jaar / 100000 inwoners")
 
+annual_crime_rates_single_y_ggp
 
-annual_crime_rates_nl_single_y_ggp <- 
-  ggplot_annual_crime_rates_single_y(incident_type_code, 
-                            xlab = "Jaar", 
-                            ylab = "Misdrijven / jaar / 100000 inwoners")
-annual_crime_rates_nl_single_y_ggp
-
-ggsave_svg(ggp = annual_crime_rates_nl_single_y_ggp,
+ggsave_svg(ggp = annual_crime_rates_single_y_ggp,
            output = here("output"),
            units = "mm",
            width = 120, height = 60, scale=2)
 
 
 
-ggplot_annual_disorder_rates <- function(by = incident_type_code,
-                                         xlab = "Jaar",
-                                         ylab = "Misdrijven / jaar / 100000 inwoners") {
+
+
+# Plot disorder rates by type of disorder on a single y scale
+annual_disorder_rates_single_y_ggp <- 
+  # annual disorder rates
   nl_alldisorder_allyears_selection |> 
-    group_by({{by}}, year) |> 
-    summarize(rel_frequency = sum(rel_frequency), .groups="drop") |> 
-    ggplot() + 
-    geom_line(aes(x=year, y = rel_frequency)) + 
-    geom_point(aes(x=year, y = rel_frequency)) + 
-    scale_x_continuous(breaks = 2012:2024) +
-    facet_wrap(facets = vars({{by}}),  scales = "free_y", ncol=4) +
-    theme_minimal() +
-    theme(legend.position = "bottom") +
-    xlab(xlab) +
-    ylab(ylab)
-}
+  # use proper label for the plot (simpler than changing the legend)
+  rename(`Soort overlast` = incident_type_code) |> 
+  # start the plot
+  ggplot() + 
+  # plot the COVID years as a bar
+  geom_col(data = nl_alldisorder_allyears_selection |>
+                  # height of the COVID bar extends 5% above the maximum rate
+                  mutate(COVID = 1.05 * max(rel_frequency) * COVID) |> 
+                  # We need only a single bar per year
+                  group_by(year, COVID) |>
+                  summarize(.groups = "drop"),
+           # light grey and semi-transparent to create a background effect
+           mapping = aes(x = year, y = COVID), color = "lightgrey", alpha = .2, width = 1) +
+  # trendline to guide the eye
+  geom_line(aes(x=year, y = rel_frequency, color = `Soort overlast`)) + 
+  # data points
+  geom_point(aes(x=year, y = rel_frequency, color = `Soort overlast`)) + 
+  # pretty axis labels
+  scale_x_continuous(breaks = 2012:2024) +
+  scale_y_continuous(breaks = seq(0,1200, 100), limits = c(0, 1200)) +
+  # viridis 
+  scale_color_viridis(discrete = TRUE, option = "D") +
+  theme_minimal() +
+  theme(legend.position = "right") +
+  # No label on X axis as it is obvious that it is years
+  xlab("") +
+  ylab("Overlastincidenten / jaar / 100000 inwoners")
 
-annual_disorder_rates_nl_ggp <- 
-  ggplot_annual_disorder_rates(incident_type_code, 
-                               xlab = "Jaar", 
-                               ylab = "Overlastincidenten / jaar / 100000 inwoners")
-annual_disorder_rates_nl_ggp
+annual_disorder_rates_single_y_ggp
 
-ggsave_svg(ggp = annual_disorder_rates_nl_ggp,
-           output = here("output"),
-           units = "mm",
-           width = 120, height = 60, scale=2)
-
-
-
-# single y scale
-ggplot_annual_disorder_rates_single_y <- function(by = incident_type_code,
-                                               xlab = "Jaar",
-                                               ylab = "Overlastincidenten / jaar / 100000 inwoners") {
-  nl_alldisorder_allyears_selection |> 
-    group_by({{by}}, year ) |> 
-    ggplot() + 
-    geom_line(aes(x=year, y = rel_frequency, color = incident_type_code)) + 
-    geom_point(aes(x=year, y = rel_frequency, color = incident_type_code)) + 
-    scale_x_continuous(breaks = 2012:2024) +
-    scale_y_continuous(breaks = seq(0,1200, 100), limits = c(0, 1200)) +
-    scale_color_viridis(discrete = TRUE, option = "D") +
-    #   scale_color_manual(name="",  values =c("darkgrey", "black")) +  
-    theme_minimal() +
-    theme(legend.position = "bottom",
-          axis.text.x = element_text(size=4, hjust=0),
-          axis.text.y = element_text(size=6, hjust=0)) +
-    xlab(xlab) +
-    ylab(ylab)
-}
-
-annual_disorder_rates_nl_single_y_ggp <- 
-  ggplot_annual_disorder_rates_single_y(incident_type_code, 
-                                     xlab = "Jaar", 
-                                     ylab = "Overlastincidenten / jaar / 100000 inwoners")
-annual_disorder_rates_nl_single_y_ggp
-
-ggsave_svg(ggp = annual_disorder_rates_nl_single_y_ggp,
+ggsave_svg(ggp = annual_disorder_rates_single_y_ggp,
            output = here("output"),
            units = "mm",
            width = 120, height = 60, scale=2)
@@ -524,6 +458,46 @@ ggsave_svg(ggp = annual_disorder_rates_nl_single_y_ggp,
 
 
 
+
+# 10. All crime types together and all disorder types together -----------------
+
+total_crime <-
+  nl_allcrime_allyears_selection |>
+  group_by(year) |>
+  summarize(rel_frequency = sum(rel_frequency),
+            COVID = min(COVID)) |>
+  mutate(`Soort incident` = "Criminaliteit")
+
+total_disorder <-
+  nl_alldisorder_allyears_selection |>
+  group_by(year) |>
+  summarize(rel_frequency = sum(rel_frequency),
+            COVID = min(COVID)) |>
+  mutate(`Soort incident` = "Overlast")
+
+annual_crime_disorder_rates_ggp <- 
+  bind_rows(total_crime, total_disorder) |> 
+  mutate(COVID = 1.00 * max(rel_frequency) * COVID) |> 
+  ggplot() + 
+  geom_col(mapping = aes(x = year, y = COVID), color = "lightgrey", alpha = .2, width = 1) +
+  geom_line(aes(x=year, y = rel_frequency, color = `Soort incident`)) + 
+  geom_point(aes(x=year, y = rel_frequency, color = `Soort incident`)) + 
+  scale_x_continuous(breaks = 2012:2024) +
+  scale_y_continuous(breaks = seq(0,4000, 500), limits = c(0, 5000)) +
+  # use discrete Viridis color palette (but note the yellow is )
+  #scale_color_viridis(discrete = TRUE, option = "A") +
+  theme_minimal() +
+  theme(legend.position = "right") +
+  # no label on X axis as it is obvious that it is years
+  xlab("") +
+  ylab("Incidenten / jaar / 100000 inwoners")
+
+annual_crime_disorder_rates_ggp 
+
+ggsave_svg(ggp = annual_crime_disorder_rates_ggp,
+           output = here("output"),
+           units = "mm",
+           width = 120, height = 60, scale=2)
 
 
 
