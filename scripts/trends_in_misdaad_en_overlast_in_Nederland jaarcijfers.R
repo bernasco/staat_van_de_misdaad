@@ -455,7 +455,7 @@ ggsave_svg(ggp = annual_disorder_rates_single_y_ggp,
 
 
 
-# 10. All crime types together and all disorder types together -----------------
+# 10. Aggregate and visuzalise all crime all disorder types together -----------------
 
 # create reported crime rate series 
 total_crime <-
@@ -463,6 +463,7 @@ total_crime <-
   # exclude traffic accidents and totals
   filter(incident_type_code   != "1.3.1 Ongevallen (weg)", 
          incident_type_code != "Totaal misdrijven") |>
+  # Summarize all crime types across years
   group_by(year) |>
   summarize(incident_count = sum(incident_count), .groups = "drop") |>
   mutate(`Soort incident` = "Criminaliteit")
@@ -472,6 +473,7 @@ total_disorder <-
   nl_alldisorder_allyears |>
   # exclude totals
   filter(incident_type_code != "Totaal registraties overlast") |>
+  # summarize all disorder types across years
   group_by(year) |>
   summarize(incident_count = sum(incident_count), .groups = "drop") |>
   mutate(`Soort incident` = "Overlast")  
