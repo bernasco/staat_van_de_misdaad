@@ -47,36 +47,36 @@
 <polyline points='443.25,308.66 443.25,5.48 ' style='stroke-width: 1.07; stroke: #FFFFFF; stroke-linecap: butt;' />
 <polyline points='565.30,308.66 565.30,5.48 ' style='stroke-width: 1.07; stroke: #FFFFFF; stroke-linecap: butt;' />
 <rect x='199.15' y='195.89' width='204.48' height='33.28' style='stroke-width: 1.07; stroke-linecap: butt; stroke-linejoin: miter; fill: #D3D3D3;' />
-<rect x='199.15' y='158.92' width='263.14' height='33.28' style='stroke-width: 1.07; stroke-linecap: butt; stroke-linejoin: miter; fill: #D3D3D3;' />
+<rect x='199.15' y='121.95' width='263.14' height='33.28' style='stroke-width: 1.07; stroke-linecap: butt; stroke-linejoin: miter; fill: #D3D3D3;' />
 <rect x='199.15' y='48.00' width='407.08' height='33.28' style='stroke-width: 1.07; stroke-linecap: butt; stroke-linejoin: miter; fill: #D3D3D3;' />
 <rect x='199.15' y='232.87' width='180.80' height='33.28' style='stroke-width: 1.07; stroke-linecap: butt; stroke-linejoin: miter; fill: #D3D3D3;' />
 <rect x='199.15' y='11.03' width='420.49' height='33.28' style='stroke-width: 1.07; stroke-linecap: butt; stroke-linejoin: miter; fill: #D3D3D3;' />
 <rect x='199.15' y='84.97' width='366.66' height='33.28' style='stroke-width: 1.07; stroke-linecap: butt; stroke-linejoin: miter; fill: #D3D3D3;' />
 <rect x='199.15' y='269.84' width='159.68' height='33.28' style='stroke-width: 1.07; stroke-linecap: butt; stroke-linejoin: miter; fill: #D3D3D3;' />
-<rect x='199.15' y='121.95' width='353.81' height='33.28' style='stroke-width: 1.07; stroke-linecap: butt; stroke-linejoin: miter; fill: #D3D3D3;' />
+<rect x='199.15' y='158.92' width='255.68' height='33.28' style='stroke-width: 1.07; stroke-linecap: butt; stroke-linejoin: miter; fill: #D3D3D3;' />
 <text x='436.18' y='215.59' text-anchor='middle' style='font-size: 8.54px; font-family: "Arial";' textLength='23.72px' lengthAdjust='spacingAndGlyphs'>50262</text>
-<text x='494.84' y='178.61' text-anchor='middle' style='font-size: 8.54px; font-family: "Arial";' textLength='23.72px' lengthAdjust='spacingAndGlyphs'>64681</text>
+<text x='494.84' y='141.64' text-anchor='middle' style='font-size: 8.54px; font-family: "Arial";' textLength='23.72px' lengthAdjust='spacingAndGlyphs'>64681</text>
 <text x='638.77' y='67.69' text-anchor='middle' style='font-size: 8.54px; font-family: "Arial";' textLength='28.47px' lengthAdjust='spacingAndGlyphs'>100060</text>
 <text x='412.49' y='252.56' text-anchor='middle' style='font-size: 8.54px; font-family: "Arial";' textLength='23.72px' lengthAdjust='spacingAndGlyphs'>44440</text>
 <text x='652.18' y='30.72' text-anchor='middle' style='font-size: 8.54px; font-family: "Arial";' textLength='28.47px' lengthAdjust='spacingAndGlyphs'>103356</text>
 <text x='598.36' y='104.67' text-anchor='middle' style='font-size: 8.54px; font-family: "Arial";' textLength='23.72px' lengthAdjust='spacingAndGlyphs'>90126</text>
 <text x='391.37' y='289.53' text-anchor='middle' style='font-size: 8.54px; font-family: "Arial";' textLength='23.72px' lengthAdjust='spacingAndGlyphs'>39249</text>
-<text x='585.51' y='141.64' text-anchor='middle' style='font-size: 8.54px; font-family: "Arial";' textLength='23.72px' lengthAdjust='spacingAndGlyphs'>86967</text>
-<text x='379.22' y='215.59' text-anchor='middle' style='font-size: 8.54px; font-family: "Arial";' textLength='21.82px' lengthAdjust='spacingAndGlyphs'> 8.7%</text>
-<text x='437.88' y='178.61' text-anchor='middle' style='font-size: 8.54px; font-family: "Arial";' textLength='23.56px' lengthAdjust='spacingAndGlyphs'>11.2%</text>
-<text x='581.82' y='67.69' text-anchor='middle' style='font-size: 8.54px; font-family: "Arial";' textLength='24.19px' lengthAdjust='spacingAndGlyphs'>17.3%</text>
-<text x='355.54' y='252.56' text-anchor='middle' style='font-size: 8.54px; font-family: "Arial";' textLength='21.82px' lengthAdjust='spacingAndGlyphs'> 7.7%</text>
-<text x='595.23' y='30.72' text-anchor='middle' style='font-size: 8.54px; font-family: "Arial";' textLength='24.19px' lengthAdjust='spacingAndGlyphs'>17.8%</text>
-<text x='541.40' y='104.67' text-anchor='middle' style='font-size: 8.54px; font-family: "Arial";' textLength='24.19px' lengthAdjust='spacingAndGlyphs'>15.6%</text>
-<text x='334.42' y='289.53' text-anchor='middle' style='font-size: 8.54px; font-family: "Arial";' textLength='21.82px' lengthAdjust='spacingAndGlyphs'> 6.8%</text>
-<text x='528.55' y='141.64' text-anchor='middle' style='font-size: 8.54px; font-family: "Arial";' textLength='24.19px' lengthAdjust='spacingAndGlyphs'>15.0%</text>
+<text x='487.37' y='178.61' text-anchor='middle' style='font-size: 8.54px; font-family: "Arial";' textLength='23.72px' lengthAdjust='spacingAndGlyphs'>62845</text>
+<text x='379.22' y='215.59' text-anchor='middle' style='font-size: 8.54px; font-family: "Arial";' textLength='21.82px' lengthAdjust='spacingAndGlyphs'> 9.1%</text>
+<text x='437.88' y='141.64' text-anchor='middle' style='font-size: 8.54px; font-family: "Arial";' textLength='23.56px' lengthAdjust='spacingAndGlyphs'>11.7%</text>
+<text x='581.82' y='67.69' text-anchor='middle' style='font-size: 8.54px; font-family: "Arial";' textLength='24.19px' lengthAdjust='spacingAndGlyphs'>18.0%</text>
+<text x='355.54' y='252.56' text-anchor='middle' style='font-size: 8.54px; font-family: "Arial";' textLength='21.82px' lengthAdjust='spacingAndGlyphs'> 8.0%</text>
+<text x='595.23' y='30.72' text-anchor='middle' style='font-size: 8.54px; font-family: "Arial";' textLength='24.19px' lengthAdjust='spacingAndGlyphs'>18.6%</text>
+<text x='541.40' y='104.67' text-anchor='middle' style='font-size: 8.54px; font-family: "Arial";' textLength='24.19px' lengthAdjust='spacingAndGlyphs'>16.2%</text>
+<text x='334.42' y='289.53' text-anchor='middle' style='font-size: 8.54px; font-family: "Arial";' textLength='21.82px' lengthAdjust='spacingAndGlyphs'> 7.1%</text>
+<text x='430.41' y='178.61' text-anchor='middle' style='font-size: 8.54px; font-family: "Arial";' textLength='23.56px' lengthAdjust='spacingAndGlyphs'>11.3%</text>
 </g>
 <g clip-path='url(#cpMC4wMHw2ODAuMzF8MC4wMHwzNDAuMTY=)'>
 <text x='171.57' y='289.63' text-anchor='end' style='font-size: 8.80px;fill: #4D4D4D; font-family: "Arial";' textLength='76.31px' lengthAdjust='spacingAndGlyphs'>2.5.2 Winkeldiefstal</text>
 <text x='171.57' y='252.65' text-anchor='end' style='font-size: 8.80px;fill: #4D4D4D; font-family: "Arial";' textLength='73.89px' lengthAdjust='spacingAndGlyphs'>1.4.5 Mishandeling</text>
 <text x='171.57' y='215.68' text-anchor='end' style='font-size: 8.80px;fill: #4D4D4D; font-family: "Arial";' textLength='113.02px' lengthAdjust='spacingAndGlyphs'>1.1.1 Diefstal/inbraak woning</text>
-<text x='171.57' y='178.71' text-anchor='end' style='font-size: 8.80px;fill: #4D4D4D; font-family: "Arial";' textLength='153.15px' lengthAdjust='spacingAndGlyphs'>1.2.1 Diefstal uit/vanaf motorvoertuigen</text>
-<text x='171.57' y='141.73' text-anchor='end' style='font-size: 8.80px;fill: #4D4D4D; font-family: "Arial";' textLength='93.95px' lengthAdjust='spacingAndGlyphs'>3.9.1 Horizontale fraude</text>
+<text x='171.57' y='178.71' text-anchor='end' style='font-size: 8.80px;fill: #4D4D4D; font-family: "Arial";' textLength='93.95px' lengthAdjust='spacingAndGlyphs'>3.9.1 Horizontale fraude</text>
+<text x='171.57' y='141.73' text-anchor='end' style='font-size: 8.80px;fill: #4D4D4D; font-family: "Arial";' textLength='153.15px' lengthAdjust='spacingAndGlyphs'>1.2.1 Diefstal uit/vanaf motorvoertuigen</text>
 <text x='171.57' y='104.76' text-anchor='end' style='font-size: 8.80px;fill: #4D4D4D; font-family: "Arial";' textLength='147.78px' lengthAdjust='spacingAndGlyphs'>2.2.1 Vernieling cq. zaakbeschadiging</text>
 <text x='171.57' y='67.79' text-anchor='end' style='font-size: 8.80px;fill: #4D4D4D; font-family: "Arial";' textLength='149.22px' lengthAdjust='spacingAndGlyphs'>1.2.3 Diefstal van brom-, snor-, fietsen</text>
 <text x='171.57' y='30.81' text-anchor='end' style='font-size: 8.80px;fill: #4D4D4D; font-family: "Arial";' textLength='129.17px' lengthAdjust='spacingAndGlyphs'>1.6.2 Overige vermogensdelicten</text>
