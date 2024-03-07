@@ -375,11 +375,24 @@ ggsave_svg(ggp=population_growth_inc_zero_ggp,
 
 #  9. Visualize development annual crime rates 2012-2024 ---------------------
 
+
 # single y scale
-annual_crime_rates_single_y_ggp <- 
+annual_crime_rates_single_y_changes <- 
   nl_allcrime_allyears_selection |> 
   mutate(incident_type_code = str_sub(incident_type_code, 7,-1)) |>
   rename(`Soort misdrijf` = incident_type_code) |>
+  group_by(`Soort misdrijf`) |>
+  arrange(`Soort misdrijf`, year) |>
+  mutate(prop_since2012 = 100* rel_frequency / first(rel_frequency),
+         prop_sinceprevious = 100 * rel_frequency / lag(rel_frequency),
+         percentage_change_since2012 = prop_since2012 - 100,
+         percentage_change_sinceprevious = prop_sinceprevious - 100)
+
+annual_crime_rates_single_y_changes |> 
+  write_csv(here("output", "annual_crime_rates_single_y_changes.csv"))
+
+annual_crime_rates_single_y_ggp <-   
+  annual_crime_rates_single_y_changes |>
   ggplot() + 
   geom_col(data = nl_allcrime_allyears_selection |>
              # height of the COVID bar extends 5% above the maximum rate
@@ -411,11 +424,24 @@ ggsave_svg(ggp = annual_crime_rates_single_y_ggp,
 
 
 # Plot disorder rates by type of disorder on a single y scale
-annual_disorder_rates_single_y_ggp <- 
+annual_disorder_rates_single_y_changes <- 
   # annual disorder rates
   nl_alldisorder_allyears_selection |> 
   # use proper label for the plot (simpler than changing the legend)
   rename(`Soort overlast` = incident_type_code) |> 
+  group_by(`Soort overlast`) |>
+  arrange(`Soort overlast`, year) |>
+  mutate(prop_since2012 = 100* rel_frequency / first(rel_frequency),
+         prop_sinceprevious = 100 * rel_frequency / lag(rel_frequency),
+         percentage_change_since2012 = prop_since2012 - 100,
+         percentage_change_sinceprevious = prop_sinceprevious - 100)
+
+annual_disorder_rates_single_y_changes |> 
+  write_csv(here("output", "annual_disorder_rates_single_y_changes.csv"))
+
+  
+annual_disorder_rates_single_y_ggp <-   
+  annual_disorder_rates_single_y_changes |>
   # start the plot
   ggplot() + 
   # plot the COVID years as a bar
@@ -478,7 +504,7 @@ total_disorder <-
   summarize(incident_count = sum(incident_count), .groups = "drop") |>
   mutate(`Soort incident` = "Overlast")  
 
-annual_crime_disorder_rates_ggp <- 
+annual_crime_disorder_rates <- 
   # combine crime and disorder in a single file (to simplify creating a legend)
   bind_rows(total_crime, total_disorder) |> 
   # add population
@@ -486,7 +512,21 @@ annual_crime_disorder_rates_ggp <-
   # calculate disorder rate
   mutate(rel_frequency = incident_count / (population / 100000)) |>
   select(-population) |>
-  mutate(COVID = as.numeric(year %in% c(2020, 2021))) |>
+  mutate(COVID = as.numeric(year %in% c(2020, 2021))) 
+
+annual_crime_disorder_changes <-
+  annual_crime_disorder_rates |>
+  group_by(`Soort incident`) |>
+  arrange(`Soort incident`, year) |>
+  mutate(prop_since2012 = 100* rel_frequency / first(rel_frequency),
+         prop_sinceprevious = 100 * rel_frequency / lag(rel_frequency),
+         percentage_change_since2012 = prop_since2012 - 100,
+         percentage_change_sinceprevious = prop_sinceprevious - 100)
+annual_crime_disorder_changes |> 
+  write_csv(here("output", "annual_crime_disorder_changes.csv"))
+
+annual_crime_disorder_rates_ggp <- 
+  annual_crime_disorder_rates|>
   # make the height of the 'COVID' bar equal to the maximum on the Y axis
   mutate(COVID = 1.00 * max(rel_frequency) * COVID) |> 
   # start the plot
