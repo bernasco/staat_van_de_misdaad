@@ -373,7 +373,7 @@ ggsave_svg(ggp=population_growth_inc_zero_ggp,
            height = 60,
            scale=2)
 
-#  9. Visualize development annual crime rates 2012-2024 ---------------------
+#  9. Visualize development annual crime/disorder rates 2012-2024 ---------------------
 
 
 # single y scale
@@ -403,7 +403,7 @@ annual_crime_rates_single_y_ggp <-
   geom_line(aes(x=year, y = rel_frequency, color = `Soort misdrijf`)) + 
   geom_point(aes(x=year, y = rel_frequency, color = `Soort misdrijf`)) + 
   scale_x_continuous(breaks = 2012:2024) +
-  scale_y_continuous(breaks = seq(0,1000, 100), limits = c(0, 1000)) +
+  scale_y_continuous(breaks = seq(0,1200, 100), limits = c(0, 1200)) +
   # use discrete Viridis color palette (but note the yellow is )
   scale_color_viridis(discrete = TRUE, option = "D") +
   theme_minimal() +
@@ -481,7 +481,7 @@ ggsave_svg(ggp = annual_disorder_rates_single_y_ggp,
 
 
 
-# 10. Aggregate and visuzalise all crime all disorder types together -----------------
+# 10. Aggregate and visualise all crime all disorder types together -----------------
 
 # create reported crime rate series 
 total_crime <-

@@ -1,0 +1,109 @@
+incident_type_code,year,incident_count,population,COVID
+Totaal registraties overlast,2012,279325,16749973.083333334,0
+Totaal registraties overlast,2013,291796,16797746.083333332,0
+Totaal registraties overlast,2014,310253,16860237.583333332,0
+Totaal registraties overlast,2015,305379,16927823.666666668,0
+Totaal registraties overlast,2016,333401,17022094.583333332,0
+Totaal registraties overlast,2017,351285,17122216.5,0
+Totaal registraties overlast,2018,349988,17219949.916666668,0
+Totaal registraties overlast,2019,366802,17335583.083333332,0
+Totaal registraties overlast,2020,510172,17435574.416666668,1
+Totaal registraties overlast,2021,536959,17518478.25,1
+Totaal registraties overlast,2022,461353,17697922.583333332,0
+Totaal registraties overlast,2023,444177,17870298,0
+Overlast door verward persoon,2012,44571,16749973.083333334,0
+Overlast door verward persoon,2013,52168,16797746.083333332,0
+Overlast door verward persoon,2014,59600,16860237.583333332,0
+Overlast door verward persoon,2015,66030,16927823.666666668,0
+Overlast door verward persoon,2016,74939,17022094.583333332,0
+Overlast door verward persoon,2017,83611,17122216.5,0
+Overlast door verward persoon,2018,90628,17219949.916666668,0
+Overlast door verward persoon,2019,99662,17335583.083333332,0
+Overlast door verward persoon,2020,117246,17435574.416666668,1
+Overlast door verward persoon,2021,130194,17518478.25,1
+Overlast door verward persoon,2022,138807,17697922.583333332,0
+Overlast door verward persoon,2023,141724,17870298,0
+Melding overlast jeugd,2012,90714,16749973.083333334,0
+Melding overlast jeugd,2013,82124,16797746.083333332,0
+Melding overlast jeugd,2014,86454,16860237.583333332,0
+Melding overlast jeugd,2015,81075,16927823.666666668,0
+Melding overlast jeugd,2016,86408,17022094.583333332,0
+Melding overlast jeugd,2017,87875,17122216.5,0
+Melding overlast jeugd,2018,70802,17219949.916666668,0
+Melding overlast jeugd,2019,76546,17335583.083333332,0
+Melding overlast jeugd,2020,137946,17435574.416666668,1
+Melding overlast jeugd,2021,125487,17518478.25,1
+Melding overlast jeugd,2022,88711,17697922.583333332,0
+Melding overlast jeugd,2023,83694,17870298,0
+Overlast ivm alcohol/ drugs,2012,19836,16749973.083333334,0
+Overlast ivm alcohol/ drugs,2013,24771,16797746.083333332,0
+Overlast ivm alcohol/ drugs,2014,25163,16860237.583333332,0
+Overlast ivm alcohol/ drugs,2015,25689,16927823.666666668,0
+Overlast ivm alcohol/ drugs,2016,29709,17022094.583333332,0
+Overlast ivm alcohol/ drugs,2017,32429,17122216.5,0
+Overlast ivm alcohol/ drugs,2018,36807,17219949.916666668,0
+Overlast ivm alcohol/ drugs,2019,40159,17335583.083333332,0
+Overlast ivm alcohol/ drugs,2020,46275,17435574.416666668,1
+Overlast ivm alcohol/ drugs,2021,46015,17518478.25,1
+Overlast ivm alcohol/ drugs,2022,56028,17697922.583333332,0
+Overlast ivm alcohol/ drugs,2023,59430,17870298,0
+Overlast zwervers,2012,11849,16749973.083333334,0
+Overlast zwervers,2013,10702,16797746.083333332,0
+Overlast zwervers,2014,11484,16860237.583333332,0
+Overlast zwervers,2015,11523,16927823.666666668,0
+Overlast zwervers,2016,14221,17022094.583333332,0
+Overlast zwervers,2017,16142,17122216.5,0
+Overlast zwervers,2018,18889,17219949.916666668,0
+Overlast zwervers,2019,22281,17335583.083333332,0
+Overlast zwervers,2020,28719,17435574.416666668,1
+Overlast zwervers,2021,26766,17518478.25,1
+Overlast zwervers,2022,33092,17697922.583333332,0
+Overlast zwervers,2023,40525,17870298,0
+Openbare dronkenschap,2012,4148,16749973.083333334,0
+Openbare dronkenschap,2013,8647,16797746.083333332,0
+Openbare dronkenschap,2014,9235,16860237.583333332,0
+Openbare dronkenschap,2015,8146,16927823.666666668,0
+Openbare dronkenschap,2016,8385,17022094.583333332,0
+Openbare dronkenschap,2017,8312,17122216.5,0
+Openbare dronkenschap,2018,8136,17219949.916666668,0
+Openbare dronkenschap,2019,7920,17335583.083333332,0
+Openbare dronkenschap,2020,5779,17435574.416666668,1
+Openbare dronkenschap,2021,5104,17518478.25,1
+Openbare dronkenschap,2022,6735,17697922.583333332,0
+Openbare dronkenschap,2023,6045,17870298,0
+Geluidshinder horeca,2012,7899,16749973.083333334,0
+Geluidshinder horeca,2013,7794,16797746.083333332,0
+Geluidshinder horeca,2014,7495,16860237.583333332,0
+Geluidshinder horeca,2015,6372,16927823.666666668,0
+Geluidshinder horeca,2016,6270,17022094.583333332,0
+Geluidshinder horeca,2017,5796,17122216.5,0
+Geluidshinder horeca,2018,5478,17219949.916666668,0
+Geluidshinder horeca,2019,4767,17335583.083333332,0
+Geluidshinder horeca,2020,3136,17435574.416666668,1
+Geluidshinder horeca,2021,2540,17518478.25,1
+Geluidshinder horeca,2022,4199,17697922.583333332,0
+Geluidshinder horeca,2023,3231,17870298,0
+Geluidshinder evenement,2012,2078,16749973.083333334,0
+Geluidshinder evenement,2013,2068,16797746.083333332,0
+Geluidshinder evenement,2014,2348,16860237.583333332,0
+Geluidshinder evenement,2015,1897,16927823.666666668,0
+Geluidshinder evenement,2016,1856,17022094.583333332,0
+Geluidshinder evenement,2017,1834,17122216.5,0
+Geluidshinder evenement,2018,1689,17219949.916666668,0
+Geluidshinder evenement,2019,1593,17335583.083333332,0
+Geluidshinder evenement,2020,679,17435574.416666668,1
+Geluidshinder evenement,2021,1080,17518478.25,1
+Geluidshinder evenement,2022,1739,17697922.583333332,0
+Geluidshinder evenement,2023,1326,17870298,0
+Geluidshinder overig,2012,98230,16749973.083333334,0
+Geluidshinder overig,2013,103522,16797746.083333332,0
+Geluidshinder overig,2014,108474,16860237.583333332,0
+Geluidshinder overig,2015,104647,16927823.666666668,0
+Geluidshinder overig,2016,111613,17022094.583333332,0
+Geluidshinder overig,2017,115286,17122216.5,0
+Geluidshinder overig,2018,117559,17219949.916666668,0
+Geluidshinder overig,2019,113874,17335583.083333332,0
+Geluidshinder overig,2020,170392,17435574.416666668,1
+Geluidshinder overig,2021,199773,17518478.25,1
+Geluidshinder overig,2022,132042,17697922.583333332,0
+Geluidshinder overig,2023,108202,17870298,0
