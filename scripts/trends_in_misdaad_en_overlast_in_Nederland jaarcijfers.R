@@ -12,32 +12,30 @@ if (!require("lubridate"))
   install.packages("lubridate")
 if (!require("tsibble")) 
   install.packages("tsibble")
-if (!require("viridis")) 
-  install.packages("viridis")
 
 #  2. Set up folder structure --------------------------------------------------
 
-# Downloaded data
+# Folder to store downloaded data
 if (dir.exists(here::here("data")) == FALSE) {
   dir.create(here::here("data"))
 }
-# Output
+# Folder to store output
 if (dir.exists(here::here("output")) == FALSE) {
   dir.create(here::here("output"))
 }
 
 #  3. Define functions and constants -----------------------------------------------
 
-# Force fresh downloads from CBS 
+# Whether or not to force fresh downloads from CBS ()
 FORCE_REFRESH <- FALSE
 
 # How many crime and disorder types to report
-N_CRIMETYPES <- 8
+N_CRIMETYPES    <- 8
 N_DISORDERTYPES <- 8
 
-# Path name downloaded crime data
+# Path name downloaded crime data police
 NL_CRIME_PATHNAME      <- here("data", "NL_Crime.csv")
-# Path name downloaded disorder data
+# Path name downloaded disorder data police
 NL_DISORDER_PATHNAME      <- here("data", "NL_Disorder.csv")
 # Path name downloaded population counts CBS
 NL_POPULATION_PATHNAME <- here("data", "NL_Population.csv")
@@ -55,31 +53,6 @@ ggsave_svg <- function(ggp, output, ...) {
          device = "svg", plot = ggp, path = output, 
          limitsize = TRUE, ...)
 }
-
-# Function definition: store ggplot figures in a list as SVG file
-ggsave_svg_list <- function(ggp_list, output, ...) {
-  # first verify that the first argument is a list
-  if(!is.list(ggp_list)) { 
-    stop("not a list")
-  }  
-  listname <- substitute(ggp_list)
-  # first get the name of the list object
-  if (is.null(names(ggp_list))) {
-    names(ggp_list) <- paste0(seq_along(ggp_list))
-  }
-  #for each named element of the list
-  map(names(ggp_list),
-      function(.x) {
-        ggsave(
-          path = here("output"),
-          filename = paste0(listname, "_", .x, ".svg"),
-          plot = ggp_list[[.x]]
-        )
-      }
-  )
-}
-
-
 
 #  4. Read crime, disorder and population data ---------------------------------
 
@@ -106,16 +79,14 @@ if (file.exists(NL_CRIME_PATHNAME) == FALSE | FORCE_REFRESH) {
     mutate(incident_count = replace_na(incident_count, 0),
            # remove trailing whitespace
            incident_type_code  = trimws(incident_type_code)) 
-  # remove 'total crime' category
-  # filter(incident_type_code != "Totaal misdrijven") 
-  
-  write_csv(nl_allcrime_allyears, NL_CRIME_PATHNAME)
+
+    # Store on disk
+    write_csv(nl_allcrime_allyears, NL_CRIME_PATHNAME)
   # Read local copy if it exists
 } else {
   nl_allcrime_allyears <- read_csv(NL_CRIME_PATHNAME,
                                    show_col_types = FALSE)
 }
-
 
 # Download or read NL-level disorder frequencies of all years 
 if (file.exists(NL_DISORDER_PATHNAME) == FALSE | FORCE_REFRESH) {
@@ -131,8 +102,11 @@ if (file.exists(NL_DISORDER_PATHNAME) == FALSE | FORCE_REFRESH) {
     ) |> 
     # create a date-class for time
     cbs_add_date_column() |>
+    # add labels
     cbs_add_label_columns() |>
+    # Make 'year' a numeric variable (rather than part of a date)
     mutate(year = year(Perioden_Date)) |>
+    # Select only necessary columns, and rename some of them
     select(incident_type_code   = Overlast_label,
            year,
            incident_count = GeregistreerdeOverlast_1) |>
@@ -140,9 +114,8 @@ if (file.exists(NL_DISORDER_PATHNAME) == FALSE | FORCE_REFRESH) {
     mutate(incident_count = replace_na(incident_count, 0),
            # remove trailing whitespace
            incident_type_code  = trimws(incident_type_code))
-  # remove 'total crime' category
-  # filter(incident_type_code != "Totaal registraties overlast") 
-  
+
+  # Store on disk
   write_csv(nl_alldisorder_allyears, NL_DISORDER_PATHNAME)
   # Read local copy if it exists
 } else {
@@ -164,9 +137,13 @@ if (file.exists(NL_POPULATION_PATHNAME) == FALSE | FORCE_REFRESH) {
     filter(Perioden_freq == "M") |>
     select(date             = Perioden_Date,
            population       = BevolkingAanHetBeginVanDePeriode_1) |>
+    # Make 'year' a numeric variable (rather than part of a date)
     mutate(year = year(date)) |>
+    # Create annual measure by averaging over months 
     group_by(year) |>
     summarize(population = mean(population, na.rm = TRUE))
+  
+  # Store on disk
   write_csv(nl_population_allyears, NL_POPULATION_PATHNAME)
   # Read local copy if it exists
 } else {
@@ -183,6 +160,10 @@ nl_allcrime_allyears_merged <-
   left_join(nl_population_allyears, by = "year") |>
   mutate(COVID = as.numeric(year %in% c(2020, 2021)))
 
+# Store crime with population data
+nl_allcrime_allyears_merged |>
+  write_csv(here("Output", "nl_allcrime_allyears.csv"))
+
 # Disorder data with population data 
 nl_alldisorder_allyears_merged <- 
   # merge with crime type category labels
@@ -191,6 +172,9 @@ nl_alldisorder_allyears_merged <-
   left_join(nl_population_allyears, by = "year") |>
   mutate(COVID = as.numeric(year %in% c(2020, 2021)))
 
+# Store disorder with population data 
+nl_alldisorder_allyears_merged |>
+  write_csv(here("Output", "nl_alldisorder_allyears.csv")) 
 
 #  6. Select crime and disorder categories -------------------------------------
 
@@ -264,10 +248,6 @@ nl_alldisorder_allyears_selection <-
 nl_population_allyears_selection <-
   nl_population_allyears |>
   filter(year >= 2012)
-
-
-
-
 
 #  7. Visualize crime and disorder category frequencies ------------------------
 
@@ -399,18 +379,16 @@ annual_crime_rates_single_y_ggp <-
              mutate(COVID = 1.05 * max(rel_frequency) * COVID) |> 
              group_by(year, COVID) |>
              summarize(.groups = "drop"),
-           mapping = aes(x = year, y = COVID), color = "lightgrey", alpha = .2, width = 1) +
+           mapping = aes(x = year, y = COVID), color = "lightgrey", alpha = .2, width = .9) +
   geom_line(aes(x=year, y = rel_frequency, color = `Soort misdrijf`)) + 
   geom_point(aes(x=year, y = rel_frequency, color = `Soort misdrijf`)) + 
   scale_x_continuous(breaks = 2012:2024) +
   scale_y_continuous(breaks = seq(0,1200, 100), limits = c(0, 1200)) +
-  # use discrete Viridis color palette (but note the yellow is )
-  scale_color_viridis(discrete = TRUE, option = "D") +
   theme_minimal() +
   theme(legend.position = "right") +
   # no label on X axis as it is obvious that it is years
   xlab("") +
-  ylab("Misdrijven / jaar / 100000 inwoners")
+  ylab("Misdrijven per jaar per 100000 inwoners")
 
 annual_crime_rates_single_y_ggp
 
@@ -452,7 +430,7 @@ annual_disorder_rates_single_y_ggp <-
              group_by(year, COVID) |>
              summarize(.groups = "drop"),
            # light grey and semi-transparent to create a background effect
-           mapping = aes(x = year, y = COVID), color = "lightgrey", alpha = .2, width = 1) +
+           mapping = aes(x = year, y = COVID), color = "lightgrey", alpha = .2, width = .9) +
   # trendline to guide the eye
   geom_line(aes(x=year, y = rel_frequency, color = `Soort overlast`)) + 
   # data points
@@ -460,13 +438,11 @@ annual_disorder_rates_single_y_ggp <-
   # pretty axis labels
   scale_x_continuous(breaks = 2012:2024) +
   scale_y_continuous(breaks = seq(0,1200, 100), limits = c(0, 1200)) +
-  # viridis 
-  scale_color_viridis(discrete = TRUE, option = "D") +
   theme_minimal() +
   theme(legend.position = "right") +
   # No label on X axis as it is obvious that it is years
   xlab("") +
-  ylab("Overlastincidenten / jaar / 100000 inwoners")
+  ylab("Overlastincidenten per jaar per 100000 inwoners")
 
 annual_disorder_rates_single_y_ggp
 
@@ -481,7 +457,7 @@ ggsave_svg(ggp = annual_disorder_rates_single_y_ggp,
 
 
 
-# 10. Aggregate and visualise all crime all disorder types together -----------------
+# 10. Aggregate and visualize all crime all disorder types together -----------------
 
 # create reported crime rate series 
 total_crime <-
@@ -532,7 +508,7 @@ annual_crime_disorder_rates_ggp <-
   # start the plot
   ggplot() + 
   # first draw the COVID bar in years 2020-2021
-  geom_col(mapping = aes(x = year, y = COVID), color = "lightgrey", alpha = .2, width = 1) + 
+  geom_col(mapping = aes(x = year, y = COVID), color = "lightgrey", alpha = .2, width = .9) + 
   # then draw the crime and disorder lines with points on them
   geom_line(aes(x=year, y = rel_frequency, color = `Soort incident`)) + 
   geom_point(aes(x=year, y = rel_frequency, color = `Soort incident`)) + 
@@ -540,13 +516,11 @@ annual_crime_disorder_rates_ggp <-
   scale_x_continuous(breaks = 2012:2024) +
   #   
   scale_y_continuous(breaks = seq(0,6000, 500), limits = c(0, 6500)) +
-  # use discrete Viridis color palette (but note the yellow is )
-  # scale_color_viridis(discrete = TRUE, option = "A") +
   theme_minimal() +
   theme(legend.position = "right") +
   # no label on X axis as it is obvious that it is years
   xlab("") +
-  ylab("Incidenten / jaar / 100000 inwoners")
+  ylab("Incidenten per jaar per 100000 inwoners")
 
 annual_crime_disorder_rates_ggp 
 
